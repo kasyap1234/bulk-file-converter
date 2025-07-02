@@ -35,11 +35,16 @@ func HandleFileConvertTask(ctx context.Context, t *asynq.Task) error {
 	}
 	switch {
 	case p.FileExt == "pdf" && p.TargetExt == "jpg":
-		return jobs.ConvertPDFToImage(p)
+		jobs.ConvertPDFToImage(p)
 	case p.FileExt == "pdf" && p.TargetExt == "txt":
-		return jobs.ConvertPDFToTxt(p)
+		jobs.ConvertPDFToText(p)
+
 	case p.FileExt == "jpg" && p.TargetExt == "pdf":
-		return jobs.ConvertImageToPDF(p)
+		jobs.ConvertImageToPDF(p)
+
+	default:
+		return fmt.Errorf("unsupported conversion: %s to %s", p.FileExt, p.TargetExt)
 	}
 
+	return nil
 }
