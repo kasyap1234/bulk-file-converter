@@ -3,4 +3,10 @@ app:
   port: "8080"
 namespace: "converter"
 owner: "Kasyap"
+workers: 7
+minio: 
+  endpoint: ""
+  accessKeyID: ""
+  secretAccessKey: ""
+  useSSL: false
 

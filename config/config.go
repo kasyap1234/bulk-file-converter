@@ -14,6 +14,13 @@ type AppConfig struct {
 	} `mapstructure:"app"`
 	namespace string `mapstructure:"namespace"`
 	owner     string `mapstructure:"owner"`
+	workers   int    `mapstructure:"workers"`
+	minio     struct {
+		endpoint        string `mapstructure:"endpoint"`
+		accessKeyID     string `mapstructure:"accessKeyID"`
+		secretAccessKey string `mapstructure:"secretAccessKey"`
+		ssl             bool   `mapstructure:"ssl"`
+	} `mapstructure:"minio"`
 }
 
 func LoadConfig() (*AppConfig, error) {
@@ -29,4 +36,5 @@ func LoadConfig() (*AppConfig, error) {
 		log.Fatalf("unable to unmarshal viper config %v", err)
 	}
 	return &cfg, nil
+
 }

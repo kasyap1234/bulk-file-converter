@@ -37,9 +37,9 @@ func HandleFileConvertTask(ctx context.Context, t *asynq.Task) error {
 	case p.FileExt == "pdf" && p.TargetExt == "jpg":
 		return jobs.ConvertPDFToImage(p)
 	case p.FileExt == "pdf" && p.TargetExt == "txt":
-		return convertPDFToTxt(p)
+		return jobs.ConvertPDFToTxt(p)
 	case p.FileExt == "jpg" && p.TargetExt == "pdf":
-		return convertImageToPDF(p)
+		return jobs.ConvertImageToPDF(p)
 	}
 
 }
