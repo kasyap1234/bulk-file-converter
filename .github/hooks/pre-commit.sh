@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "Formatting Go files..."
+go fmt ./...
