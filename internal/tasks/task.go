@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 
 	"github.com/hibiken/asynq"
 )
@@ -14,14 +15,13 @@ const (
 )
 
 type FileConvertPayload struct {
-	PayloadID int    `json:"payload_id"`
-	FileName  string `json:"filename"`
-	FileExt   string `json:"fileExt"`
-	TargetExt string `json:"targetExt"`
+	Bucket    string `json:"bucket"`
+	ObjectKey string `json:"object_key"`
+	TargetExt string `json:"target_ext"`
 }
 
-func NewFileConvertTask(fileconvertpayload FileConvertPayload) (*asynq.Task, error) {
-	payload, err := json.Marshal(fileconvertpayload)
+func NewFileConvertTask(p FileConvertPayload) (*asynq.Task, error) {
+	payload, err := json.Marshal(p)
 	if err != nil {
 		return nil, err
 	}
@@ -33,17 +33,22 @@ func HandleFileConvertTask(ctx context.Context, t *asynq.Task) error {
 	if err := json.Unmarshal(t.Payload(), &p); err != nil {
 		return fmt.Errorf("json.Unmarshal failed %v %w", err, asynq.SkipRetry)
 	}
+	sourceExt := filepath.Ext(p.ObjectKey)
+	if len(sourceExt) > 0 {
+		sourceExt = sourceExt[1:]
+	}
+
 	switch {
-	case p.FileExt == "pdf" && p.TargetExt == "jpg":
+	case sourceExt == "pdf" && p.TargetExt == "jpg":
 		jobs.ConvertPDFToImage(p)
-	case p.FileExt == "pdf" && p.TargetExt == "txt":
+	case sourceExt == "pdf" && p.TargetExt == "txt":
 		jobs.ConvertPDFToText(p)
 
-	case p.FileExt == "jpg" && p.TargetExt == "pdf":
+	case sourceExt == "jpg" && p.TargetExt == "pdf":
 		jobs.ConvertImageToPDF(p)
 
 	default:
-		return fmt.Errorf("unsupported conversion: %s to %s", p.FileExt, p.TargetExt)
+		return fmt.Errorf("unsupported conversion: %s to %s", sourceExt, p.TargetExt)
 	}
 
 	return nil

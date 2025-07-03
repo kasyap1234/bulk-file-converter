@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-
 	"github.com/spf13/viper"
 )
 
@@ -30,7 +29,7 @@ type AppConfig struct {
 func LoadConfig() (*AppConfig, error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".") // Look for config in the working directory.
+	viper.AddConfigPath(".")
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, fmt.Errorf("unable to load configuration: %w", err)
